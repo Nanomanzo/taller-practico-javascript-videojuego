@@ -5,6 +5,7 @@ const btnRight = document.querySelector("#right")
 const btnLeft = document.querySelector("#left")
 const btnDown = document.querySelector("#down")
 let canvasSize;
+let bomba = []
 let elementsSize;
 let playerPosition = {
 
@@ -15,6 +16,7 @@ let giftPosition = {
     x: undefined,
     y: undefined
 }
+let level = 0
 
 window.addEventListener("load", setCanvasSize)
 window.addEventListener("resize", setCanvasSize)
@@ -32,16 +34,23 @@ function setCanvasSize() {
     elementsSize = canvasSize / 10;
   
     startGame();
-  }
+}
   
 function startGame() {
   game.font = elementsSize + 'px Verdana';
   game.textAlign = 'end';
 
-  const map = maps[0];
+  const map = maps[level];
+
+  if (!map) {
+    gameWin()
+    return
+  }
+
   const mapRows = map.trim().split('\n');
   const mapRowCols = mapRows.map(row => row.trim().split(''));
   
+  bomba = []
   game.clearRect(0,0,canvasSize, canvasSize);
   mapRowCols.forEach((row, rowI) => {
     row.forEach((col, colI) => {
@@ -54,32 +63,61 @@ function startGame() {
           playerPosition.x = posX;
           playerPosition.y = posY;
           console.log({playerPosition});
-        }
+        } 
       } else if (col == "I"){
         giftPosition.x = posX;
         giftPosition.y = posY;
-      }     
-      game.fillText(emoji, posX, posY);
-    });
-  });
+      } else if (col == 'X') {
+        bomba.push({
+            x: posX,
+            y: posY
+        });
+        }
+      
+      
+         game.fillText(emoji, posX, posY);
+       });
+      });
 
-  movePlayer();
+      movePlayer();
 }
   
 function movePlayer() {
     let giftCollisionX = playerPosition.x.toFixed(3) == giftPosition.x.toFixed(3)
     let giftColiisionY = playerPosition.y.toFixed(3) == giftPosition.y.toFixed(3)
-    let giftCollision = giftCollisionX == giftColiisionY
+    let giftCollision = giftCollisionX && giftColiisionY
 
     if (giftCollision) {
-        console.log("pasasaste de nivelS");
+        pasarNivel();
     }
+ 
+
+    let enemyCollition = bomba.find(enemy => {
+        enemyCollitionX = playerPosition.x.toFixed(3) == enemy.x.toFixed(3)
+        enemyCollitionY = playerPosition.y.toFixed(3) == enemy.y.toFixed(3)
+        return enemyCollitionX && enemyCollitionY
+    })
+
+    if (enemyCollition) {
+        console.log("BNOMBBOOOOOO");
+    }
+ 
 
     game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y);
 
 
 }
-  
+
+function pasarNivel(){
+    console.log("pasaste de nivel");
+    level++
+    startGame()
+}
+
+function gameWin() {
+    console.log("pasaste el juego");
+}
+
 window.addEventListener('keydown', moveByKeys);
 btnUp.addEventListener('click', moveUp);
 btnLeft.addEventListener('click', moveLeft);
@@ -135,4 +173,6 @@ function moveDown() {
         console.log({playerPosition, canvasSize});
         startGame();
     }
-  }
+}
+
+
