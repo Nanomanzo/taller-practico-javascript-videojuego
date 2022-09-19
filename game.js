@@ -4,6 +4,7 @@ const btnUp = document.querySelector("#up")
 const btnRight = document.querySelector("#right")
 const btnLeft = document.querySelector("#left")
 const btnDown = document.querySelector("#down")
+const spanLives = document.querySelector("#lives")
 let canvasSize;
 let bomba = []
 let elementsSize;
@@ -17,6 +18,7 @@ let giftPosition = {
     y: undefined
 }
 let level = 0
+let vidas = 3
 
 window.addEventListener("load", setCanvasSize)
 window.addEventListener("resize", setCanvasSize)
@@ -49,6 +51,8 @@ function startGame() {
 
   const mapRows = map.trim().split('\n');
   const mapRowCols = mapRows.map(row => row.trim().split(''));
+
+  showLives()
   
   bomba = []
   game.clearRect(0,0,canvasSize, canvasSize);
@@ -99,7 +103,7 @@ function movePlayer() {
     })
 
     if (enemyCollition) {
-        console.log("BNOMBBOOOOOO");
+        levelFail()
     }
  
 
@@ -112,6 +116,28 @@ function pasarNivel(){
     console.log("pasaste de nivel");
     level++
     startGame()
+}
+
+function levelFail() {
+    console.log("BOMMMMM");
+    vidas--
+
+    if (vidas <= 0) {
+        level = 0
+        vidas = 3 
+        console.warn(vidas);
+    }
+
+    console.log(vidas)
+
+    playerPosition.x = undefined
+    playerPosition.y = undefined
+    startGame()
+}
+
+function showLives() {
+    spanLives.innerHTML = emojis["HEART"].repeat(vidas)
+
 }
 
 function gameWin() {
